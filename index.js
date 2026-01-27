@@ -15,9 +15,18 @@ const { unstrikethrough, strikethrough } = require("./utils/strikethrough")
 var secrets = manageSecrets.parse(path.join(__dirname, ".config", "secrets.json"))
 
 // Envoyer une notification via ntfy et/ou Telegram
-function sendNotification(title, message){
-	sendNtfy(title, message)
-	sendTelegram(title, message)
+async function sendNotification(title, message){
+	try {
+		await sendNtfy(title, message)
+	} catch(e){
+		console.error("Erreur lors de l'envoi de la notification ntfy :", e)
+	}
+	
+	try {
+		await sendTelegram(title, message)
+	} catch(e){
+		console.error("Erreur lors de l'envoi de la notification Telegram :", e)
+	}
 }
 
 // Convertir une date en un string human-readable et relatif

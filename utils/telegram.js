@@ -3,8 +3,10 @@ const manageSecrets = require("./manage-secrets")
 
 var secrets = manageSecrets.parse(path.join(__dirname, "..", ".config", "secrets.json"))
 
+const ERROR_STATUS_CODE = 999 // Fallback status code for fetch errors
+
 module.exports = async function(title, message){
-	if(!secrets.TELEGRAM_BOT_TOKEN || !secrets.TELEGRAM_CHAT_ID) return console.log("Envois d'alertes via Telegram désactivé (valeur manquante dans le .env)")
+	if(!secrets.TELEGRAM_BOT_TOKEN || !secrets.TELEGRAM_CHAT_ID) return console.log("Envoi d'alertes via Telegram désactivé (valeur manquante dans le .env)")
 	else console.log(`Envoi d'une alerte via Telegram : ${title} - ${message}`)
 
 	const url = `https://api.telegram.org/bot${secrets.TELEGRAM_BOT_TOKEN}/sendMessage`
@@ -20,7 +22,7 @@ module.exports = async function(title, message){
 		headers: {
 			"Content-Type": "application/json"
 		}
-	}).then(res => res.status).catch(() => 999)
+	}).then(res => res.status).catch(() => ERROR_STATUS_CODE)
 
 	return statusCode
 }
