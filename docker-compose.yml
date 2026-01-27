@@ -5,11 +5,6 @@ services:
     build: .
     container_name: syncpronote
     restart: unless-stopped
-    volumes:
-      # Persistent volume for secrets (modified on each Pronote reconnection)
-      - ./config:/usr/src/app/.config
-      # Optional: volume for Google credentials if not using env vars
-      - ./google-credentials.json:/usr/src/app/google-credentials.json:ro
     environment:
       # Google Calendar Configuration
       - GOOGLE_CALENDAR_ID=${GOOGLE_CALENDAR_ID}
