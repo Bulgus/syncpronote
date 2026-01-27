@@ -9,10 +9,15 @@ ENV NODE_ENV production
 
 # Prepare app directory
 WORKDIR /usr/src/app
-COPY . .
 
-# Install dependencies if not found, which shouldn't happen
-RUN if [ ! -d "node_modules" ]; then npm install --include=dev --no-audit --no-package-lock-only --no-update-notifier --no-fund; fi
+# Copy package files first (for better layer caching)
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install --omit=dev --no-audit --no-fund
+
+# Copy application files
+COPY . .
 
 # Run the application
 CMD npm run start

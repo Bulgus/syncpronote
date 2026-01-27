@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  syncpronote:
+    build: .
+    container_name: syncpronote
+    restart: unless-stopped
+    volumes:
+      # Persistent volume for secrets (modified on each Pronote reconnection)
+      - ./config:/usr/src/app/.config
+      # Optional: volume for Google credentials if not using env vars
+      - ./google-credentials.json:/usr/src/app/google-credentials.json:ro
+    environment:
+      # Google Calendar Configuration
+      - GOOGLE_CALENDAR_ID=${GOOGLE_CALENDAR_ID}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - GOOGLE_REFRESH_TOKEN=${GOOGLE_REFRESH_TOKEN}
+      
+      # Pronote Configuration
+      - PRONOTE_ROOT_URL=${PRONOTE_ROOT_URL}
+      - PRONOTE_TOKEN=${PRONOTE_TOKEN}
+      - PRONOTE_ACCOUNT_KIND=${PRONOTE_ACCOUNT_KIND:-6}
+      - PRONOTE_USERNAME=${PRONOTE_USERNAME}
+      - PRONOTE_DEVICE_UUID=${PRONOTE_DEVICE_UUID}
+      
+      # Optional: Ntfy notifications
+      - NTFY_URL=${NTFY_URL:-https://ntfy.sh}
+      - NTFY_TOPIC=${NTFY_TOPIC:-}
+      - NTFY_USERNAME=${NTFY_USERNAME:-}
+      - NTFY_PASSWORD=${NTFY_PASSWORD:-}
+      
+      # Optional: Uptime monitoring
+      - UPTIME_PING_URL=${UPTIME_PING_URL:-}
+      
+      # Optional: Set timezone (default is UTC)
+      # Recommended for France: Europe/Paris
+      # - TZ=Europe/Paris

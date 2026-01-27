@@ -2,6 +2,11 @@
 
 Un service en arrière-plan qui synchronise votre emploi du temps Pronote sur Google Agenda. Celui-ci vous alerte aussi lorsqu'un cours est modifié ou annulé via [ntfy](https://ntfy.sh/) (optionnel).
 
+## Déploiement rapide
+
+- **[Guide complet de déploiement sur Dokploy](DOKPLOY.md)** - Instructions détaillées pour déployer sur Dokploy
+- **Installation locale** - Voir ci-dessous pour une installation manuelle
+
 
 ## Installation
 
@@ -46,6 +51,77 @@ npm start
 pm2 start index.js --name "SyncPronote"
 ```
 
+
+## Déploiement avec Dokploy (ou Docker)
+
+Dokploy est une plateforme de déploiement qui facilite le déploiement d'applications conteneurisées. Voici comment déployer SyncPronote sur Dokploy :
+
+### Prérequis
+
+1. **Configurer les authentifications localement** (sur votre machine) :
+```sh
+cd cli
+
+# Configurer Pronote
+node auth-pronote.js
+
+# Configurer Google Calendar
+node auth-google.js
+# Important : un fichier `google-credentials.json` doit exister à la racine du projet
+```
+
+Cela créera un fichier `.config/secrets.json` avec vos tokens d'authentification.
+
+### Déploiement sur Dokploy
+
+1. **Sur Dokploy, créer une nouvelle application Docker Compose**
+
+2. **Configurer le repository Git** : pointez vers votre fork de ce dépôt
+
+3. **Configurer les variables d'environnement** dans Dokploy avec les valeurs de votre fichier `.config/secrets.json` :
+   - `GOOGLE_CALENDAR_ID`
+   - `GOOGLE_CLIENT_ID`
+   - `GOOGLE_CLIENT_SECRET`
+   - `GOOGLE_REFRESH_TOKEN`
+   - `PRONOTE_ROOT_URL`
+   - `PRONOTE_TOKEN`
+   - `PRONOTE_ACCOUNT_KIND` (généralement `6` pour un compte étudiant)
+   - `PRONOTE_USERNAME`
+   - `PRONOTE_DEVICE_UUID`
+   
+   Optionnel (pour les notifications) :
+   - `NTFY_URL` (par défaut : `https://ntfy.sh`)
+   - `NTFY_TOPIC`
+   - `NTFY_USERNAME` (si authentification requise)
+   - `NTFY_PASSWORD` (si authentification requise)
+   
+   Optionnel (pour le monitoring) :
+   - `UPTIME_PING_URL`
+
+4. **Configurer un volume persistant** (important !) :
+   - Créer un volume monté sur `/usr/src/app/.config`
+   - Cela permettra au fichier `secrets.json` d'être mis à jour automatiquement à chaque reconnexion à Pronote
+
+5. **Déployer** : Dokploy construira l'image Docker et lancera le conteneur
+
+### Alternative : Docker Compose en local
+
+```sh
+# Copier le fichier d'exemple
+cp .env.example .env
+
+# Éditer .env avec vos valeurs
+nano .env
+
+# Créer le répertoire de configuration
+mkdir -p config
+
+# Lancer le conteneur
+docker-compose up -d
+
+# Voir les logs
+docker-compose logs -f
+```
 
 ## Fonctionnement
 
