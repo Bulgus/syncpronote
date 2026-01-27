@@ -32,7 +32,7 @@ services:
       
       # Optional: Uptime monitoring
       - UPTIME_PING_URL=${UPTIME_PING_URL:-}
-    
-    # Optionally set timezone
-    # environment:
-    #   - TZ=Europe/Paris
+      
+      # Optional: Set timezone (default is UTC)
+      # Recommended for France: Europe/Paris
+      # - TZ=Europe/Paris

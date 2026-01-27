@@ -2,6 +2,11 @@
 
 Un service en arrière-plan qui synchronise votre emploi du temps Pronote sur Google Agenda. Celui-ci vous alerte aussi lorsqu'un cours est modifié ou annulé via [ntfy](https://ntfy.sh/) (optionnel).
 
+## Déploiement rapide
+
+- **[Guide complet de déploiement sur Dokploy](DOKPLOY.md)** - Instructions détaillées pour déployer sur Dokploy
+- **Installation locale** - Voir ci-dessous pour une installation manuelle
+
 
 ## Installation
 
