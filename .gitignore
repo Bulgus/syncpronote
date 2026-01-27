@@ -12,6 +12,7 @@ __pycache__
 .env
 .vercel
 test.js
+config/
 
 **/.DS_Store
 .DS_Store?
