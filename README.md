@@ -1,6 +1,6 @@
 # SyncPronote
 
-Un service en arrière-plan qui synchronise votre emploi du temps Pronote sur Google Agenda. Celui-ci vous alerte aussi lorsqu'un cours est modifié ou annulé via [ntfy](https://ntfy.sh/) (optionnel).
+Un service en arrière-plan qui synchronise votre emploi du temps Pronote sur Google Agenda. Celui-ci vous alerte aussi lorsqu'un cours est modifié ou annulé via [ntfy](https://ntfy.sh/) ou Telegram (optionnel).
 
 ## Déploiement rapide
 
@@ -12,7 +12,7 @@ Un service en arrière-plan qui synchronise votre emploi du temps Pronote sur Go
 
 > Vous aurez besoin d'une version récente de [Node.js](https://nodejs.org/en/)
 > Vous pouvez installer [pm2](https://www.npmjs.com/package/pm2) pour démarrer le service en arrière-plan
-> Vous pouvez installer [ntfy](https://ntfy.sh/) pour recevoir des notifications lors de certaines actions apportées à l'EDT
+> Vous pouvez configurer [ntfy](https://ntfy.sh/) ou Telegram pour recevoir des notifications lors de certaines actions apportées à l'EDT
 
 1. Cloner le dépôt
 ```sh
@@ -41,7 +41,8 @@ mv .config/secrets.example.json .config/secrets.json
 nano .config/secrets.json
 # (!) Sur Docker, vous devrez créer un volume pour `.config/secrets.json` puisqu'il est modifiée automatiquement à chaque reconnexion à Pronote
 # Ajouter une valeur `GOOGLE_CALENDAR_ID` avec l'identifiant de l'agenda Google qui contiendra les nouveaux événements (format similaire à celui d'une adresse mail)
-# Vous pouvez ajouter `NTFY_URL` + `NTFY_TOPIC` et les réglages d'authentification facultatifs (`NTFY_USERNAME` + `NTFY_PASSWORD`) pour recevoir des notifications lors de la modification ou suppression d'un cours. Le topic utilisé sera `pronote`.
+# Vous pouvez ajouter `NTFY_URL` + `NTFY_TOPIC` et les réglages d'authentification facultatifs (`NTFY_USERNAME` + `NTFY_PASSWORD`) pour recevoir des notifications lors de la modification ou suppression d'un cours.
+# Vous pouvez également ajouter `TELEGRAM_BOT_TOKEN` + `TELEGRAM_CHAT_ID` pour recevoir des notifications via Telegram.
 ```
 
 4. Lancer le service
@@ -94,6 +95,8 @@ Cela créera un fichier `.config/secrets.json` avec vos tokens d'authentificatio
    - `NTFY_TOPIC`
    - `NTFY_USERNAME` (si authentification requise)
    - `NTFY_PASSWORD` (si authentification requise)
+   - `TELEGRAM_BOT_TOKEN` (token du bot Telegram)
+   - `TELEGRAM_CHAT_ID` (ID du chat Telegram)
    
    Optionnel (pour le monitoring) :
    - `UPTIME_PING_URL`
@@ -128,6 +131,36 @@ docker-compose logs -f
 Toutes les demies-heures (x:00 et x:30) entre 6h et 21h, les cours sur la semaine actuelle ainsi que les trois semaines à venir seront récupérés depuis Pronote et comparés aux entrées de l'agenda Google. Les événements manquants seront ajoutés, les cours modifiés seront mis à jour et les cours annulés seront supprimés.
 
 > Seules les entrées considérées comme des cours peuvent être mises à jour ou supprimées. Les autres événements du calendrier ne seront pas touchés.
+
+
+## Configuration des notifications
+
+### Notifications via ntfy
+
+Pour recevoir des notifications via ntfy, configurez les variables suivantes dans `.config/secrets.json` :
+- `NTFY_URL` : URL du serveur ntfy (par défaut : `https://ntfy.sh`)
+- `NTFY_TOPIC` : Le topic à utiliser pour les notifications
+- `NTFY_USERNAME` et `NTFY_PASSWORD` : Identifiants si authentification requise (optionnel)
+
+### Notifications via Telegram
+
+Pour recevoir des notifications via Telegram :
+
+1. **Créer un bot Telegram** :
+   - Ouvrez Telegram et cherchez [@BotFather](https://t.me/botfather)
+   - Envoyez `/newbot` et suivez les instructions
+   - Récupérez le token du bot (format : `123456789:ABCdefGHIjklMNOpqrsTUVwxyz`)
+
+2. **Obtenir votre Chat ID** :
+   - Envoyez un message à votre bot
+   - Visitez `https://api.telegram.org/bot<VOTRE_TOKEN>/getUpdates`
+   - Récupérez la valeur `chat.id` dans la réponse
+
+3. **Configurer les variables** dans `.config/secrets.json` :
+   - `TELEGRAM_BOT_TOKEN` : Le token de votre bot
+   - `TELEGRAM_CHAT_ID` : Votre Chat ID
+
+Vous pouvez activer ntfy et Telegram simultanément pour recevoir des notifications sur les deux plateformes.
 
 
 ## Personnalisation (avancé)
