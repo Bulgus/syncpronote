@@ -8,10 +8,17 @@ const { google } = require("googleapis")
 const manageSecrets = require("./utils/manage-secrets")
 const classnameParser = require("./utils/classnames")
 const sendNtfy = require("./utils/ntfy")
+const sendTelegram = require("./utils/telegram")
 const customHours = require("./utils/custom-hours")
 const { unstrikethrough, strikethrough } = require("./utils/strikethrough")
 
 var secrets = manageSecrets.parse(path.join(__dirname, ".config", "secrets.json"))
+
+// Envoyer une notification via ntfy et/ou Telegram
+function sendNotification(title, message){
+	sendNtfy(title, message)
+	sendTelegram(title, message)
+}
 
 // Convertir une date en un string human-readable et relatif
 function dateToString(date){
@@ -333,7 +340,7 @@ async function main(){
 					else if(change.type == "delete-in-google"){
 						console.log("debug info, delete in google: ", event, event.summary)
 						// event.start.dateTime = événement dans le calendrier Google /// event.start = événement dans l'EDT Pronote
-						if(new Date(event.start.dateTime).getTime() > Date.now()) sendNtfy("Cours annulé", `Le cours "${classnameParser(event.summary.replace(" (annulé)", ""))}" ${dateToString(new Date(event.start.dateTime))} à ${new Date(event.start.dateTime).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })} est annulé`)
+						if(new Date(event.start.dateTime).getTime() > Date.now()) sendNotification("Cours annulé", `Le cours "${classnameParser(event.summary.replace(" (annulé)", ""))}" ${dateToString(new Date(event.start.dateTime))} à ${new Date(event.start.dateTime).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })} est annulé`)
 
 						await calendarAPI.events.delete({
 							calendarId: calendarID,
@@ -359,7 +366,7 @@ async function main(){
 						}
 
 						var relativeDate = dateToString(new Date(event.start))
-						if(new Date(event.start).getTime() > Date.now()) sendNtfy("Cours modifié", `Le cours "${classnameParser(event.name)}" ${relativeDate} à ${event.start.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })} a été modifié`)
+						if(new Date(event.start).getTime() > Date.now()) sendNotification("Cours modifié", `Le cours "${classnameParser(event.name)}" ${relativeDate} à ${event.start.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })} a été modifié`)
 
 						await calendarAPI.events.update({
 							calendarId: calendarID,
