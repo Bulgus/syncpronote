@@ -33,3 +33,6 @@ services:
       # - TZ=Europe/Paris
   volumes:
     - syncpronote_config:/usr/src/app/.config
+
+volumes:
+  syncpronote_config: null
