@@ -36,4 +36,3 @@ services:
 
 volumes:
   syncpronote_config:
-    driver: local
