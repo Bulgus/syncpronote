@@ -242,9 +242,9 @@ async function main(){
 	}, 120 * 1000) // toutes les 2 minutes
 
 	// Vérif périodique : modifs dans l'EDT
-	console.log("En attente de la prochaine vérification périodique (toutes les 30 minutes entre 6h et 21h)...")
+	console.log("En attente de la prochaine vérification périodique (toutes les 5 minutes)...")
 	CronJob.from({
-		cronTime: "00,30 6-21 * * *",
+		cronTime: "*/5 * * * *",
 		onTick: async function(){
 			console.log("!!! Vérification périodique des changements dans l'EDT !!!")
 			console.log(`!!! ${new Date().toLocaleString("fr-FR")} !!!`)
