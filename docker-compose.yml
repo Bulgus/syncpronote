@@ -35,4 +35,5 @@ services:
     - syncpronote_config:/usr/src/app/.config
 
 volumes:
-  syncpronote_config: null
+  syncpronote_config:
+    driver: local
