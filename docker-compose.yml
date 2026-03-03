@@ -31,3 +31,5 @@ services:
       # Optional: Set timezone (default is UTC)
       # Recommended for France: Europe/Paris
       # - TZ=Europe/Paris
+  volumes:
+    - syncpronote_config:/usr/src/app/.config
